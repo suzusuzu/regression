@@ -159,9 +159,9 @@
             (= rand-f :inversion) (recur (conj island' (inverse (rand-nth tree-roulette))))
             :else (recur (conj island' (rand-nth tree-roulette)))))))))
 
-(defn elite-roulette
-      [island evaluation-func]
-      (take 10 (sort-by evaluation-func island)))
+(defn generate-elite-roulette
+      [num]
+      (fn [island evaluation-func] (take num (sort-by evaluation-func island))))
 
 (defn generate-eva-func
       [func range]
@@ -196,6 +196,7 @@
         range (:range conf)
         migrate-interval (:migrate-interval conf)
         eva-func (generate-eva-func right-func range)
+        elite-num (:elite-num conf)
         min-tree (atom '())
         min-result (atom 100000000000000)]
     (loop [islands (apply vector (take island-num (repeatedly #(generate-island population leafs inners depth))))
@@ -213,6 +214,6 @@
                   (reset! min-tree min-tree')))
             (println num " , " min-tree' " , " min-result')
             (if (= (mod num migrate-interval) (dec migrate-interval))
-              (recur (pmap  #(evolution % population cross-p mutate-p inverse-p eva-func elite-roulette leafs inners depth) (migrate islands migrate-num)) (inc num))
-              (recur (pmap  #(evolution % population cross-p mutate-p inverse-p eva-func elite-roulette leafs inners depth) islands) (inc num))
+              (recur (pmap  #(evolution % population cross-p mutate-p inverse-p eva-func (generate-elite-roulette elite-num) leafs inners depth) (migrate islands migrate-num)) (inc num))
+              (recur (pmap  #(evolution % population cross-p mutate-p inverse-p eva-func (generate-elite-roulette elite-num) leafs inners depth) islands) (inc num))
               )))))))

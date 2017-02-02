@@ -17,4 +17,5 @@
   :right-func      (fn [x] (Math/sin x))                     ;導出する関数
   :range            (apply vector (pmap #(/ % 100.0) (range 1000)))                    ;xの値域
   :migrate-interval 10                                        ;移住間隔
+  :elite-num         10                                     ;エリート選択個体数
   )
